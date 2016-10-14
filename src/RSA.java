@@ -1,32 +1,37 @@
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class RSA {
+public class rsa {
 
-	//Makes the needed variables for the math
-	private BigInteger n, d, e;
-	
-	//Declares the max bit length
-	private static int bitlen = 1024;
-	
-	//This method allows for a different public key to be used
-	public RSA(BigInteger newN, BigInteger newE){
-		n = newN;
-		e = newE;
-	}
-	
-	//This method can both encrypt and decrypt
-	public RSA(int bits){
-		//Makes the bit length the length of the input
-		bitlen = bits;
-		//Makes a Secure RNG
-		SecureRandom r = new SecureRandom();
-		//Makes the two numbers to get the huge prime number
-		BigInteger p = new BigInteger(bitlen/2, 100, r);
-		BigInteger q = new BigInteger(bitlen/2, 100, r);
-		//Multiplies the two big ints to get the number that makes the prime num
+	public static void main(String[] args){
+		
+		//Creates a BigInteger ONE to subtract 1 from a BigInteger bc you can't subtract an int from BigInteger
+		BigInteger ONE = new BigInteger("1");
+		//Secure Random is just a completely unpredictable RND
+		SecureRandom rand = new SecureRandom();
+
+		//Creates the BigIntegers for equation
+		BigInteger d, e, n;
+		BigInteger p = BigInteger.probablePrime(128, rand);
+		BigInteger q = BigInteger.probablePrime(128, rand);
+		//Finds the Phi of Q 
+		BigInteger phi = (p.subtract(ONE)).multiply(q.subtract(ONE));
+		
 		n = p.multiply(q);
+		e = new BigInteger("65537");
+		d = e.modInverse(phi);
+
+		String string = "this is a test";
+		BigInteger plainText = new BigInteger(string.getBytes());
+		BigInteger cipherText = plainText.modPow(e, n);
+		BigInteger originalMessage = cipherText.modPow(d, n);
+		String decrypted = new String(originalMessage.toByteArray());
+
+		System.out.println("original: " + string);
+		System.out.println("encrypted: " + cipherText);
+		System.out.println("decrypted: " + decrypted);
+		
 	}
 	
 }
+
